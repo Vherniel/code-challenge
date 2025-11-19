@@ -22,3 +22,14 @@ function sumToNRecursive(n: number): number {
 // sumToNRecursive(5) must return 15
 // sumToNRecursive(8) must return 36
 console.log(`${sumToNRecursive(8)}`);
+
+// =============================================================================
+
+// Overall space and time complexity: O(1)
+function sumToNFormula(n: number): number {
+  return (n * (n + 1)) / 2;
+}
+
+// sumToNFormula(5) must return 15
+// sumToNFormula(8) must return 36
+console.log(`${sumToNFormula(8)}`);
