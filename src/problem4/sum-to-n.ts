@@ -10,3 +10,15 @@ function sumToNForLoop(n: number): number {
 // sumToNForLoop(5) must return 15
 // sumToNForLoop(8) must return 36
 console.log(`${sumToNForLoop(8)}`);
+
+// =============================================================================
+
+// Overall space and time complexity: O(n)
+function sumToNRecursive(n: number): number {
+  if (n === 1) return 1; // base case
+  return n + sumToNRecursive(n - 1); // recursive case
+}
+
+// sumToNRecursive(5) must return 15
+// sumToNRecursive(8) must return 36
+console.log(`${sumToNRecursive(8)}`);
