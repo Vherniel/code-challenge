@@ -9,6 +9,7 @@ import {
 } from './db/query/users';
 import { httpError } from './utils/http-error';
 import { corsMiddleware, verifyDbReady } from './middleware';
+import { type UsersTableSelect } from './db/schema';
 
 const app = express();
 const port = Number(process.env.PORT) || 3000;
@@ -16,9 +17,20 @@ const port = Number(process.env.PORT) || 3000;
 app.use(corsMiddleware);
 app.use(verifyDbReady);
 
+export interface UserQueryParams {
+	name?: string;
+	minAge?: number;
+	maxAge?: number;
+	orderBy?: keyof UsersTableSelect;
+	asc?: boolean;
+	desc?: boolean;
+	limit?: number;
+	offset?: number;
+}
+
 // Get all users
 app.get('/users', async (req: Request, res: Response) => {
-	res.json(await getUsers());
+	res.json(await getUsers(req.query as UserQueryParams));
 });
 
 // Get user by ID
