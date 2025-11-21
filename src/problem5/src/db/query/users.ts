@@ -58,4 +58,11 @@ async function updateUser({ id, name, age, email }: UsersTableUpdate) {
 		.returning();
 }
 
-export { getUsers, getUserById, createUser, updateUser };
+async function deleteUser(id: number) {
+	return await db
+		.delete(usersTable)
+		.where(eq(usersTable.id, Number(id)))
+		.returning();
+}
+
+export { getUsers, getUserById, createUser, updateUser, deleteUser };
