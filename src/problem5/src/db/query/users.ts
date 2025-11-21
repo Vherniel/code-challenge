@@ -42,4 +42,8 @@ async function getUsers({
 	});
 }
 
-export { getUsers }
+async function getUserById(id: number) {
+	return await db.query.users.findFirst({ where: eq(usersTable.id, id) });
+}
+
+export { getUsers, getUserById };
