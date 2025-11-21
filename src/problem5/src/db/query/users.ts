@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { and, eq, gte, like, lte, asc, desc } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/libsql';
-import { UsersTableInsert, usersTable } from '../schema';
+import { UsersTableInsert, UsersTableUpdate, usersTable } from '../schema';
 import { UserQueryParams } from '@/src';
 
 const db = drizzle<{ users: typeof usersTable }>({
@@ -50,4 +50,12 @@ async function createUser({ name, age, email }: UsersTableInsert) {
 	return await db.insert(usersTable).values({ name, age, email }).returning();
 }
 
-export { getUsers, getUserById, createUser };
+async function updateUser({ id, name, age, email }: UsersTableUpdate) {
+	return await db
+		.update(usersTable)
+		.set({ name, age, email })
+		.where(eq(usersTable.id, Number(id)))
+		.returning();
+}
+
+export { getUsers, getUserById, createUser, updateUser };
