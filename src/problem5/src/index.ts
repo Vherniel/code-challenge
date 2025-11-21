@@ -1,6 +1,12 @@
 import 'dotenv/config';
 import express, { type Request, type Response } from 'express';
-import { createUser, getUserById, getUsers, updateUser } from './db/query/users';
+import {
+	createUser,
+	deleteUser,
+	getUserById,
+	getUsers,
+	updateUser,
+} from './db/query/users';
 import { httpError } from './utils/http-error';
 import { corsMiddleware, verifyDbReady } from './middleware';
 
@@ -56,6 +62,22 @@ app.put('/users/:id', express.json(), async (req: Request, res: Response) => {
 		}
 
 		res.json(result);
+	} catch (error) {
+		httpError(res, 500);
+	}
+});
+
+// Delete a user by ID
+app.delete('/users/:id', async (req: Request, res: Response) => {
+	const { id } = req.params;
+	try {
+		const result = await deleteUser(Number(id));
+
+		if (result.length == 0) {
+			return res.status(404).json({ error: 'User not found' });
+		}
+
+		res.json({ message: 'User deleted successfully' });
 	} catch (error) {
 		httpError(res, 500);
 	}
