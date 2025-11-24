@@ -210,6 +210,97 @@ Response 403
 * ❌ Gamification logic unrelated to score counting
 * ❌ Admin panel for editing scores
 
+## Trade-Offs & Design Decisions
+
+### 1. Server-Determined Score vs Client-Determined Score
+
+**Chosen:** Server-determined increments
+**Trade-offs:**
+
+* ✔ Prevents client tampering
+* ✔ Simplifies backend security
+* ✖ Requires additional server logic (rules engine)
+* ✖ Adds CPU usage for validating rules
+
+### 2. Real-Time Leaderboard (WebSocket/SSE) vs Polling
+
+**Chosen:** WebSocket/SSE broadcast
+**Trade-offs:**
+
+* ✔ Instant updates
+* ✔ Lower bandwidth than constant polling
+* ✔ Better UX
+* ✖ Requires maintaining persistent connections
+* ✖ Slightly more infra complexity
+
+### 3. Redis Cache for Leaderboard vs DB-only
+
+**Chosen:** Redis caching
+**Trade-offs:**
+
+* ✔ Much faster leaderboard queries
+* ✔ Supports high throughput
+* ✖ Introduces eventual consistency window
+* ✖ Redis adds dependency + ops overhead
+
+### 4. Redis Pub/Sub vs Message Queue Event Bus
+
+**Chosen:** Redis Pub/Sub (simple, fast)
+**Trade-offs:**
+
+* ✔ Very low latency
+* ✔ Easy integration with WebSockets
+* ✖ Not durable—missed messages if subscriber goes down
+* ✖ Not suited for complex workflows
+
+### 5. Action Replay Protection (actionId) vs No Replay System
+
+**Chosen:** `actionId` replay protection
+**Trade-offs:**
+
+* ✔ Prevents duplicate scoring
+* ✔ Increases integrity of scoring system
+* ✖ Requires DB write or cache check per action
+* ✖ Slightly higher latency
+
+### 6. Sorted Leaderboard vs Approximate Ranking
+
+**Chosen:** Real sorted leaderboard (Top 10)
+**Trade-offs:**
+
+* ✔ Accurate rankings
+* ✔ Easy to reason about
+* ✖ Expensive under high churn if recalculated too often
+* ✖ Requires caching to avoid DB load
+
+### 7. Atomic DB Increment vs Queue-Based Update Processing
+
+**Chosen:** Atomic DB increment
+**Trade-offs:**
+
+* ✔ Immediate consistency
+* ✔ Simple implementation
+* ✖ DB hot-spot on heavy write traffic
+* Alternative: queue-based batch processing → lower DB write contention but adds latency
+
+### 8. Using JWT Authentication vs Session or API Keys
+
+**Chosen:** JWT
+**Trade-offs:**
+
+* ✔ Stateless (scales well)
+* ✔ Widely supported
+* ✖ Requires careful rotation/expiry handling
+* ✖ Token invalidation is hard
+
+### 9. Using Structured Logs vs Simple Console Logging
+
+**Chosen:** Structured logs
+**Trade-offs:**
+
+* ✔ Better observability, tracing, analytics
+* ✖ Higher implementation and storage cost
+
 ## Dependencies
 
 * Node.js, TypeScript
